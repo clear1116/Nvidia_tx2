@@ -21,7 +21,7 @@ image = Image.new("1", (width, height))
 Draw = ImageDraw.Draw(image)  # 设置刷新区域，并写入字符串，这里调用的是PIL图形库的画图函数
 Draw.rectangle((0, 0, width, height), outline=0, fill=0)
 Draw.text((0, 0), "oled Testing", font=font, fill=255)
-cc=np.array(image)
+cc=np.packbits(np.array(image),axis=0)
 cv2.imshow(cc)
 cv2.waitKey(0)
 print(type(image))

@@ -91,32 +91,32 @@ def OLED_Show_text(text:str):
 	image = Image.new('1', (width, height))
 	draw = ImageDraw.Draw(image)
 	draw.rectangle((0, 0, width, height), outline=0, fill=0)
-	font = ImageFont.truetype('/usr/share/fonts/MSYH/msyh.ttc',size=20)
+	font = ImageFont.truetype('/usr/share/fonts/MSYH/msyh.ttc',size=16)
 	draw.text((0, 0), text, font=font, fill=255)
-	tt0=time.time()
 	ssd1306_data = img_to_ssd1306(np.array(image))
-	tt1=time.time()
-	print(tt1-tt0)
+	OLED_Show(ssd1306_data)
+
+def OLED_Show_img(path:str):
+	image = Image.open(path)
+	image = image.resize((128, 64)).convert('1')
+	ssd1306_data = img_to_ssd1306(np.array(image))
 	OLED_Show(ssd1306_data)
 
 def img_to_ssd1306(np_image):
-	ssd1306_data = bytearray(1024)  # create a byte array for the SSD1306 data
-	for y in range(64):
-		for x in range(128):
-			pixel = np_image[y][x]
-			index = x + (y // 8) * 128
-			bit = y % 8
-			if pixel ==True:  # set the corresponding bit in the byte array
-				ssd1306_data[index] |= (1 << bit)
-			else:
-				ssd1306_data[index] &= (~(1 << bit))
+	bits = np.packbits(np.array(np_image),axis=0,bitorder='little')# create a byte array for the SSD1306 data
+	ssd1306_data = bits.reshape(-1).tolist()
 	return ssd1306_data
 
 OLED_Init()
-fps = 0
-for i in range(100):
-	t0=time.time()
-	OLED_Show_text(f"FPS={int(fps)}")
-	t1=time.time()
-	fps=1/(t1-t0)
+# fps = 0
+# for i in range(500):
+# 	t0=time.time()
+# 	OLED_Show_text(f"FPS={int(fps)}")
+# 	t1=time.time()
+# 	fps = 1/(t1-t0)
+# 	time.sleep(0.3)
+OLED_Show_img('R-C.jpg')
+time.sleep(10)
+OLED_Show_text('给初遥的小心心')
+time.sleep(10)
 OLED_Clear()
